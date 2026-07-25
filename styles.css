@@ -1,0 +1,584 @@
+/* ../core/src/view/styles.css */
+.synapses-root {
+  --synapses-bg: #ffffff;
+  --synapses-bg2: #f6f6f7;
+  --synapses-text: #232323;
+  --synapses-text2: #8a8a8a;
+  --synapses-border: rgba(214, 214, 214, 0.75);
+  --synapses-accent: #4a90d9;
+  margin: 0;
+  height: 100%;
+  font:
+    13px/1.4 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  color: var(--synapses-text);
+  background: var(--synapses-bg);
+  overflow: hidden;
+}
+.synapses-root *,
+.synapses-root *::before,
+.synapses-root *::after {
+  box-sizing: border-box;
+}
+#synapses-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+#synapses-toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--synapses-border);
+  background: var(--synapses-bg2);
+  position: relative;
+  z-index: 5;
+}
+.synapses-btn {
+  position: relative;
+  border: 1px solid var(--synapses-border);
+  background: var(--synapses-bg);
+  color: inherit;
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.synapses-btn:hover {
+  border-color: var(--synapses-accent);
+}
+.synapses-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.synapses-btn-refresh {
+  font-size: 1em;
+  line-height: 1;
+}
+.synapses-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border: 1px solid var(--synapses-border);
+  border-radius: 6px;
+  background: var(--synapses-bg2);
+  color: var(--synapses-text);
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 400;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+.synapses-btn[data-tip]:hover::after,
+.synapses-btn[data-tip]:focus-visible::after {
+  opacity: 1;
+  transition-delay: 0.45s;
+}
+#synapses-toolbar > .synapses-btn:last-child[data-tip]::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.synapses-title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.synapses-add-group {
+  display: flex;
+  gap: 4px;
+}
+.synapses-add-group .synapses-btn {
+  font-size: 11px;
+  color: var(--synapses-text2);
+}
+#synapses-stage {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+  cursor: grab;
+  background-image:
+    radial-gradient(
+      circle at center,
+      color-mix(in srgb, var(--synapses-text) 5%, transparent) 1px,
+      transparent 1px);
+  background-size: 22px 22px;
+}
+#synapses-stage.grabbing {
+  cursor: grabbing;
+}
+#synapses-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+#synapses-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+#synapses-world.synapses-static .synapses-node {
+  transition: none;
+}
+.synapses-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: fit-content;
+  min-width: 64px;
+  max-width: var(--synapses-node-maxw, 240px);
+  min-height: var(--synapses-node-h, 28px);
+  font-size: var(--synapses-node-font, 15px);
+  line-height: 1.1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border: 1px solid var(--synapses-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--synapses-bg2) 70%, transparent);
+  color: var(--synapses-text);
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+  transition:
+    transform 0.84s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.6s ease,
+    background 0.15s,
+    border-color 0.15s;
+}
+.synapses-node:hover {
+  border-color: var(--synapses-accent);
+}
+.synapses-node-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.synapses-node.zone-focus {
+  font-weight: 600;
+  border-width: 2px;
+  border-color: var(--synapses-primary, var(--synapses-accent));
+  background: color-mix(in srgb, var(--synapses-primary, var(--synapses-accent)) 22%, var(--synapses-bg2));
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--synapses-primary, var(--synapses-accent)) 12%, transparent);
+}
+.synapses-node.appearing {
+  opacity: 0;
+}
+.synapses-node.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+.synapses-tooltip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 20;
+  display: none;
+  max-width: 320px;
+  padding: 4px 8px;
+  border: 1px solid var(--synapses-border);
+  border-radius: 6px;
+  background: var(--synapses-bg2);
+  color: var(--synapses-text);
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  transform: translateX(-50%);
+}
+.synapses-tooltip.shown {
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .synapses-node {
+    transition: background 0.15s, border-color 0.15s;
+  }
+}
+.synapses-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 5;
+  transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.synapses-handle::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+}
+.handle-top {
+  top: -4px;
+  left: 50%;
+  margin-left: -4px;
+}
+.handle-bottom {
+  bottom: -4px;
+  left: 50%;
+  margin-left: -4px;
+}
+.handle-left {
+  left: -4px;
+  top: 50%;
+  margin-top: -4px;
+}
+.handle-right {
+  right: -4px;
+  top: 50%;
+  margin-top: -4px;
+}
+.handle-empty {
+  background: transparent;
+  border: 2px solid var(--synapses-primary, var(--synapses-accent));
+}
+.handle-shown {
+  background: var(--synapses-primary, var(--synapses-accent));
+  border: 2px solid var(--synapses-primary, var(--synapses-accent));
+}
+.handle-more {
+  background: var(--synapses-dot-hidden, #2ecc71);
+  border: 2px solid var(--synapses-dot-hidden, #2ecc71);
+}
+.synapses-handle:hover {
+  transform: scale(2);
+}
+.synapses-mobile .synapses-handle {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .synapses-handle {
+    transition: none;
+  }
+}
+.synapses-edge-actions {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  display: none;
+  gap: 4px;
+  align-items: center;
+}
+.synapses-edge-actions.is-shown {
+  display: flex;
+}
+.synapses-edge-remove,
+.synapses-edge-cancel {
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--synapses-border);
+  border-radius: 11px;
+  background: var(--synapses-bg);
+  font: 600 12px/1 inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.synapses-edge-remove {
+  display: inline-flex;
+  color: #c0392b;
+}
+.synapses-edge-remove:hover {
+  border-color: #e23b2e;
+  color: #e23b2e;
+}
+.synapses-edge-cancel {
+  display: none;
+  color: #27ae60;
+  border-color: color-mix(in srgb, #2ecc71 45%, var(--synapses-border));
+  background: color-mix(in srgb, #2ecc71 12%, var(--synapses-bg));
+}
+.synapses-edge-cancel:hover {
+  border-color: #2ecc71;
+}
+.synapses-edge-actions.confirm .synapses-edge-remove {
+  background: #c0392b;
+  color: #fff;
+  border-color: #c0392b;
+}
+.synapses-edge-actions.confirm .synapses-edge-cancel {
+  display: inline-flex;
+}
+.synapses-edge-actions.confirm {
+  gap: 48px;
+}
+.synapses-edge-actions.confirm .synapses-edge-remove,
+.synapses-edge-actions.confirm .synapses-edge-cancel {
+  min-width: 72px;
+}
+#synapses-breadcrumb,
+#synapses-pins {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 5px 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-top: 1px solid var(--synapses-border);
+  background: var(--synapses-bg2);
+  scrollbar-color: color-mix(in srgb, var(--synapses-text2) 30%, transparent) transparent;
+}
+#synapses-pins {
+  border-top: none;
+  border-bottom: 1px solid var(--synapses-border);
+}
+#synapses-pins:empty {
+  display: none;
+}
+#synapses-breadcrumb::-webkit-scrollbar-track,
+#synapses-pins::-webkit-scrollbar-track {
+  background: transparent;
+}
+#synapses-breadcrumb::-webkit-scrollbar-thumb,
+#synapses-pins::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--synapses-text2) 30%, transparent);
+}
+#synapses-breadcrumb:hover::-webkit-scrollbar-thumb,
+#synapses-pins:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--synapses-text2) 50%, transparent);
+}
+.synapses-crumb {
+  flex: 0 0 auto;
+  max-width: 140px;
+  border: 1px solid var(--synapses-border);
+  background: color-mix(in srgb, var(--synapses-bg2) 70%, transparent);
+  color: var(--synapses-text);
+  border-radius: 10px;
+  padding: 2px 8px;
+  cursor: pointer;
+  font: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+}
+.synapses-crumb:hover {
+  border-color: var(--synapses-accent);
+}
+.synapses-crumb.current {
+  font-weight: 600;
+  border-color: var(--synapses-primary, var(--synapses-accent));
+  background: color-mix(in srgb, var(--synapses-primary, var(--synapses-accent)) 22%, transparent);
+}
+.synapses-flash {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  color: var(--synapses-text2);
+  pointer-events: none;
+}
+.synapses-flash.is-shown {
+  display: flex;
+}
+.synapses-spinner {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  z-index: 10;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--synapses-border);
+  border-top-color: var(--synapses-accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+  animation: synapses-spin 0.6s linear infinite;
+}
+.synapses-spinner.is-shown {
+  opacity: 1;
+}
+@keyframes synapses-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .synapses-spinner {
+    animation: none;
+  }
+}
+.synapses-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 16vh;
+  background: rgba(0, 0, 0, 0.35);
+}
+.synapses-dialog-overlay.is-anchored {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 0;
+}
+.synapses-dialog.is-anchored {
+  position: absolute;
+}
+.synapses-dialog {
+  width: min(420px, 92vw);
+  background: var(--synapses-bg);
+  color: var(--synapses-text);
+  border: 1px solid var(--synapses-border);
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.35);
+}
+.synapses-dialog-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.synapses-dialog-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--synapses-border);
+  border-radius: 7px;
+  background: var(--synapses-bg2);
+  color: var(--synapses-text);
+  font: inherit;
+}
+.synapses-dialog-input:focus {
+  outline: none;
+  border-color: var(--synapses-accent);
+}
+.synapses-dialog-results {
+  max-height: 180px;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+.synapses-dialog-result {
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.synapses-dialog-result:hover,
+.synapses-dialog-result.is-active {
+  background: color-mix(in srgb, var(--synapses-accent) 18%, transparent);
+}
+.synapses-dialog-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--synapses-text2);
+}
+.synapses-dialog-hint.err {
+  color: #c0392b;
+}
+.synapses-context-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.synapses-context-menu {
+  position: absolute;
+  min-width: 160px;
+  background: var(--synapses-bg);
+  color: var(--synapses-text);
+  border: 1px solid var(--synapses-border);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.synapses-context-menu-item {
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.synapses-context-menu-item:hover {
+  background: color-mix(in srgb, var(--synapses-accent) 18%, transparent);
+}
+.synapses-colors-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.synapses-colors {
+  position: absolute;
+  min-width: 240px;
+  background: var(--synapses-bg);
+  color: var(--synapses-text);
+  border: 1px solid var(--synapses-border);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.synapses-colors-head {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--synapses-text2);
+  padding: 2px 4px 6px;
+}
+.synapses-colors-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+}
+.synapses-colors-label {
+  flex: 1;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.synapses-colors-swatch {
+  width: 28px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--synapses-border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+.synapses-colors-reset {
+  width: 22px;
+  height: 22px;
+  line-height: 1;
+  border: 1px solid var(--synapses-border);
+  border-radius: 6px;
+  background: var(--synapses-bg2);
+  color: var(--synapses-text2);
+  cursor: pointer;
+}
+.synapses-colors-reset:hover:not(:disabled) {
+  border-color: var(--synapses-accent);
+  color: var(--synapses-text);
+}
+.synapses-colors-reset:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
